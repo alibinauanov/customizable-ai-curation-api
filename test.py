@@ -14,14 +14,17 @@ def curate_content(input_data):
     # Generate a single prompt for GPT-3.5 Turbo
     prompt = f"Given the following curation methods:\n{curation_prompt}\n\nCurate the following content:\n{content_to_curate}\n\nCurated Result:\n"
 
-    # Call the OpenAI API to generate curated content
-    response = openai.Completion.create(
-        engine="gpt-3.5-turbo",
-        prompt=prompt,
-        max_tokens=300
+    # Call the OpenAI API to generate curated content using chat completion endpoint
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that curates content."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=1024
     )
 
-    curated_result = response.choices[0].text.strip()
+    curated_result = response.choices[0].message['content'].strip()
     return curated_result
 
 # Example input data

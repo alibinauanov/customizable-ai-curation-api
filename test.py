@@ -1,5 +1,7 @@
 import openai
 import apikey
+import requests
+from bs4 import BeautifulSoup
 
 # Set your OpenAI API key
 openai.api_key = apikey.api
@@ -35,10 +37,83 @@ input_data = {
         "each business related tweet should be summarized briefly into one sentence",
         "remove duplicated content"
     ],
-    "content_to_curate": "40 urls Twitter accounts"
+    "content_to_curate": [
+        "https://twitter.com/reachpathways",
+        "https://twitter.com/connectcarehero",
+        "https://twitter.com/mystrongcircle",
+        "https://twitter.com/getroomii",
+        "https://twitter.com/lisabmobility",
+        "https://twitter.com/saferateco",
+        "https://twitter.com/trust_clarity",
+        "https://twitter.com/Kalima_KLX",
+        "https://twitter.com/sanaraizen",
+        "https://twitter.com/remoteshare",
+        "https://twitter.com/officialedurain",
+        "https://twitter.com/iteratehealth",
+        "https://twitter.com/prosperetyinc",
+        "https://twitter.com/MySmartCharts",
+        "https://twitter.com/balodanafashion",
+        "https://twitter.com/desksides",
+        "https://twitter.com/use_tandem",
+        "http://twitter.com/hellokadeya",
+        "https://twitter.com/ShoppingSoftly",
+        "https://twitter.com/Leagueswype",
+        "https://twitter.com/ajmontgomery85",
+        "https://twitter.com/SomneaHealth",
+        "https://twitter.com/streoapp",
+        "https://www.twitter.com/_kikrr_",
+        "https://twitter.com/hublysurgical",
+        "https://twitter.com/westxeast",
+        "https://twitter.com/opnrmusic",
+        "https://twitter.com/eventnoire",
+        "https://twitter.com/graaphene",
+        "https://twitter.com/kinkofahq",
+        "https://twitter.com/hyivyhealth",
+        "https://twitter.com/diiclae",
+        "https://twitter.com/MinorityCircle",
+        "https://twitter.com/demicomposting",
+        "https://twitter.com/karma_trade",
+        "https://twitter.com/BettorVision",
+        "https://twitter.com/playlightpong",
+        "https://twitter.com/ojaexpress",
+        "https://twitter.com/BlipEnergy",
+        "https://twitter.com/EBishaf"
+    ]
 }
 
-# Call the curate_content function with the example input
+def scrape_tweets_from_account(account_url):
+    # Code to scrape tweets from the provided URL
+    # Return the scraped tweet content as a list of strings
+    response = requests.get(account_url)
+    
+    if response.status_code == 200:
+        # Parse the HTML content using BeautifulSoup
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Find tweet elements (you need to inspect the page source to find the right selectors)
+        tweet_elements = soup.select('.tweet-text')  # Adjust the selector
+        
+        # Extract tweet text from the elements
+        tweets = [element.get_text() for element in tweet_elements]
+        return tweets
+    else:
+        print(f"Failed to fetch tweets from {account_url}")
+        return []
+
+curated_content = []
+
+# Modify the code to loop through each Twitter URL and scrape tweets
+for account_url in input_data["content_to_curate"]:
+    tweets = scrape_tweets_from_account(account_url)
+    
+    # Process the scraped tweets and add them to the curated content
+    curated_content.append("\n".join(tweets))
+
+# Join the curated content to form a single string
+content_to_curate = "\n".join(curated_content)
+
+# Call the curate_content function with the updated input
+input_data["content_to_curate"] = content_to_curate
 curated_output = curate_content(input_data)
 
 # Print the curated result
